@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>Vizag Library</title>
+        <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+    </head>
+    <body>
+        <h1>Vizag Library</h1>
+        <form>
+            <input type="text" id="search">
+            <input type="button" id="searchButton" value="search">
+        </form>
+        <ul id="books">
+        </ul>
+    </body>
+</html>
+<script>
+    var apiUrl="/api/books";
+
+    $(document).ready(function(){
+        //Populate list of books from DB
+        $.ajax({
+               url: apiUrl,
+               data: {
+                format: 'text'
+               },
+               dataType: 'text',
+               success: function(data) {
+                 console.log(data)
+                 //Convert string to javascript object
+                 var books=JSON.parse(data);
+                 books.forEach(function(book){
+                    $("#books").append("<li>" + book.title + "</li>");
+                 })
+               },
+               error: function(err) {
+                  console.log('An error has occurred' + JSON.stringify(err));
+              },
+               type: 'GET'
+            });
+
+            $("#searchButton").on('click',function(){
+                var term=$("#search").val();
+                $.ajax({
+                    url: "/api/books/search/" + term,
+                    data: {
+                        format: 'json'
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        //alert(JSON.stringify(data))
+                        //Convert string to javascript object
+                        var books=data;
+                        
+                        $("#books").empty();
+                        books.forEach(function(book){
+                            $("#books").append("<li>" + book.title + "</li>");
+                        })
+                    },
+                    error: function(err) {
+                        console.log('An error has occurred' + JSON.stringify(err));
+                    },
+                    type: 'GET'
+                    });
+            })
+    })
+
+    
+</script>
